@@ -1,0 +1,4 @@
+body {
+  background: url('./images/backgroundImage.png') no-repeat center center fixed;
+  position: fixed;
+}

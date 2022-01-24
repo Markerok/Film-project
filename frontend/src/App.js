@@ -1,12 +1,16 @@
-import React from 'react';
-import AuthComponent from './components/Authorization/AuthComponent';
+import React from 'react'
+import { BrowserRouter, Route } from 'react-router-dom'
+import './App.css'
+import Content from './components/Content/Content'
+import Header from './components/Header/Header'
 
 function App() {
   return (
     <div className="App">
-      <AuthComponent />
+      <Header />
+      <Content />
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
