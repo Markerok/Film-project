@@ -21,14 +21,14 @@ const create = async (req, res) => {
     return res.status(400).json({ message: 'Email is already registry' });
   } else {
     const hashPassword = bcrypt.hashSync(password, 7);
-    const userRole = await RoleModel.findOne({ value: 'admin' });
+    const userRole = await RoleModel.findOne({ value: 'user' });
     const user = await UsersModel.create({
       username,
       email,
       password: hashPassword,
       roles: [userRole.value],
     });
-    const { password, ...restUser } = user;
+    const { password: secureDeletePassword, ...restUser } = user.toJSON();
     res.status(200).json(restUser);
   }
 };

@@ -57,6 +57,8 @@ function Header() {
     'фантастика',
     'фэнтези',
   ]
+  const [login, setLogin] = useState('')
+  const [pass, setPass] = useState('')
   const [loginSign, setLoginSign] = useState('')
   const [emailSign, setEmailSign] = useState('')
   const [passSign, setPassSign] = useState('')
@@ -128,15 +130,14 @@ function Header() {
   }
 
   const onSubmit = async (loginSign, emailSign, passSign) => {
-    console.log('clicked')
-    console.log(loginSign)
     const res = await fetch('http://localhost:3001/user', {
       method: 'POST',
       body: { loginSign, emailSign, passSign },
     })
     if (!res.ok) {
-      console.log(res.status)
+      alert(res.status)
     }
+    alert(res.json())
     return await res.json()
   }
 
@@ -229,12 +230,9 @@ function Header() {
                   id="name"
                   label="Log In"
                   type="login"
+                  value={login}
+                  onChange={(event) => setLogin(event.target.value)}
                   fullWidth
-                  {...register('username', {
-                    required: true,
-                    minLength: 5,
-                    maxLength: 20,
-                  })}
                 />
 
                 <TextField
@@ -242,12 +240,11 @@ function Header() {
                   id="pass"
                   label="Password"
                   type="password"
+                  value={pass}
+                  onChange={(event) => {
+                    setPass(event.target.value)
+                  }}
                   fullWidth
-                  {...register('username', {
-                    required: true,
-                    minLength: 5,
-                    maxLength: 20,
-                  })}
                 />
               </DialogContent>
 
