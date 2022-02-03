@@ -4,6 +4,7 @@ const userRouter = require('./users/user/router');
 const filmRouter = require('./films/film/router');
 const roleRouter = require('./role/role/router');
 const loginRouter = require('./login/router');
+const authRouter = require('./login/authRouter');
 const corsMiddleware = require('./middleware/cors.middleware');
 
 const port = 3001;
@@ -16,6 +17,7 @@ app.use('/user', userRouter);
 app.use('/film', filmRouter);
 app.use('/role', roleRouter);
 app.use('/login', loginRouter);
+app.use('/auth', authRouter);
 
 mongoose
   .connect(

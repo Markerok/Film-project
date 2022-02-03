@@ -1,82 +1,124 @@
-import { React } from 'react';
+import { React, useEffect, useState } from 'react'
 import {
-  AppBar, Button, Container, Toolbar, Typography,
-} from '@mui/material';
-import { Box } from '@mui/system';
-import { styled, alpha } from '@mui/material/styles';
-import SearchIcon from '@mui/icons-material/Search';
-import InputBase from '@mui/material/InputBase';
+  AppBar,
+  Button,
+  Container,
+  Menu,
+  MenuItem,
+  Toolbar,
+  Typography,
+} from '@mui/material'
+import { Box } from '@mui/system'
+import SearchIcon from '@mui/icons-material/Search'
+import { useDispatch } from 'react-redux'
+import { logout } from '../../store/userReducer'
+import { StyledInputBase, Search, SearchIconWrapper } from './styles'
+import { useStyles } from '../../pages/Content/styles'
+import { Link } from 'react-router-dom'
+import useInput from '../../hooks/useInput'
+import { options } from './constants'
+import useContentContext from '../ContentContext'
 
 const PageUser = () => {
-  const pages = ['Главная', 'Категории'];
+  const dispatch = useDispatch()
 
-  const Search = styled('div')(({ theme }) => ({
-    position: 'relative',
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: alpha(theme.palette.common.white, 0.15),
-    '&:hover': {
-      backgroundColor: alpha(theme.palette.common.white, 0.25),
-    },
-    marginRight: theme.spacing(2),
-    marginLeft: 0,
-    width: '100%',
-    [theme.breakpoints.up('sm')]: {
-      marginLeft: theme.spacing(3),
-      width: 'auto',
-    },
-  }));
+  const [searchValue, setSearchValue] = useState('')
 
-  const SearchIconWrapper = styled('div')(({ theme }) => ({
-    padding: theme.spacing(0, 2),
-    height: '100%',
-    position: 'absolute',
-    pointerEvents: 'none',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  }));
+  const { search } = useContentContext()
 
-  const StyledInputBase = styled(InputBase)(({ theme }) => ({
-    color: 'inherit',
-    '& .MuiInputBase-input': {
-      padding: theme.spacing(1, 1, 1, 0),
-      // vertical padding + font size from searchIcon
-      paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-      transition: theme.transitions.create('width'),
-      width: '100%',
-      [theme.breakpoints.up('md')]: {
-        width: '20ch',
-      },
-    },
-  }));
+  const classes = useStyles()
+  const [anchorEl, setAnchorEl] = useInput(null)
+  const open = Boolean(anchorEl)
+
+  const handleClickMenu = (event) => {
+    setAnchorEl(event.currentTarget)
+  }
+  const handleCloseMenu = () => {
+    setAnchorEl(null)
+  }
+
+  useEffect(() => {
+    search(searchValue)
+  }, [searchValue, search])
 
   return (
     <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar>
-          <Typography variant="h6" noWrap component="div" sx={{ mr: 2, display: { md: 'block' } }}>
+          <Typography
+            variant="h6"
+            noWrap
+            component="div"
+            sx={{ mr: 2, display: { md: 'block' } }}
+          >
             LOGO
           </Typography>
           <Box sx={{ flexGrow: 1, display: { md: 'flex' } }}>
-            {pages.map((page) => (
-              <Button key={page} sx={{ my: 1, color: 'white', display: 'box' }}>
-                {page}
-              </Button>
-            ))}
+            <Button sx={{ my: 1, color: 'white', display: 'box' }}>
+              <Link className={classes.linkHeader} to="/films">
+                Главная
+              </Link>
+            </Button>
+
+            <Button
+              aria-label="more"
+              id="long-button"
+              aria-controls={open ? 'long-menu' : undefined}
+              aria-expanded={open ? 'true' : undefined}
+              aria-haspopup="true"
+              onClick={handleClickMenu}
+              sx={{ my: 1, color: 'white', display: 'box' }}
+            >
+              Категории
+            </Button>
+            <Menu
+              id="long-menu"
+              MenuListProps={{
+                'aria-labelledby': 'long-button',
+              }}
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleCloseMenu}
+              PaperProps={{
+                style: {
+                  maxHeight: 48 * 4.5,
+                  width: '20ch',
+                },
+              }}
+            >
+              {options.map((option) => (
+                <MenuItem
+                  key={option}
+                  selected={option === 'Pyxis'}
+                  onClick={handleCloseMenu}
+                >
+                  {option}
+                </MenuItem>
+              ))}
+            </Menu>
           </Box>
           <Search>
             <SearchIconWrapper>
               <SearchIcon />
             </SearchIconWrapper>
-            <StyledInputBase placeholder="Search…" inputProps={{ 'aria-label': 'search' }} />
+            <StyledInputBase
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
+              placeholder="Search…"
+              inputProps={{ 'aria-label': 'search' }}
+            />
           </Search>
-          <Button color="inherit" variant="outlined">
+          <Button
+            onClick={() => dispatch(logout())}
+            color="inherit"
+            variant="outlined"
+          >
             Log Out
           </Button>
         </Toolbar>
       </Container>
     </AppBar>
-  );
-};
+  )
+}
 
-export default PageUser;
+export default PageUser

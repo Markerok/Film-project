@@ -28,8 +28,9 @@ const create = async (req, res) => {
       password: hashPassword,
       roles: [userRole.value],
     });
+    user.save();
     const { password: secureDeletePassword, ...restUser } = user.toJSON();
-    res.status(200).json(restUser);
+    res.status(200).json('User was created');
   }
 };
 

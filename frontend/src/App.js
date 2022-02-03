@@ -1,15 +1,23 @@
-import React from 'react'
-import { BrowserRouter, Route } from 'react-router-dom'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
+
 import './App.css'
-import Content from './components/Content/Content'
-import Header from './components/Header/Header'
+import Content from './pages/Content/Content'
+import { ContentProvider } from './components/ContentContext'
+import Film from './pages/Film/Film'
+import Layout from './components/Layout'
 
 function App() {
   return (
-    <div className="App">
-      <Header />
-      <Content />
-    </div>
+    <ContentProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route path="/films" element={<Content />} />
+            <Route path="/films/:id" element={<Film />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </ContentProvider>
   )
 }
 

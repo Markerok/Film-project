@@ -1,4 +1,4 @@
-import { React, useState } from 'react'
+import { React, useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import {
   AppBar,
@@ -14,97 +14,51 @@ import {
   Menu,
   MenuItem,
 } from '@mui/material'
-import { styled, alpha } from '@mui/material/styles'
+import { useDispatch } from 'react-redux'
 import { Box } from '@mui/system'
 import SearchIcon from '@mui/icons-material/Search'
-import InputBase from '@mui/material/InputBase'
 
-export const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: 'inherit',
-  '& .MuiInputBase-input': {
-    padding: theme.spacing(1, 1, 1, 0),
-    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create('width'),
-    width: '100%',
-    [theme.breakpoints.up('md')]: {
-      width: '20ch',
-    },
-  },
-}))
+import useInput from '../../hooks/useInput'
+import { registration, login } from '../../store/actions'
+import useContentContext from '../ContentContext'
+import { options } from './constants'
+import { StyledInputBase, Search, SearchIconWrapper } from './styles'
+import { Link } from 'react-router-dom'
+import { useStyles } from '../../pages/Content/styles'
 
 function Header() {
-  const options = [
-    'боевик',
-    'военный',
-    'детектив',
-    'детский',
-    'документальный',
-    'драма',
-    'исторический',
-    'комедия',
-    'короткометражный',
-    'криминал',
-    'мелодрама',
-    'мистика',
-    'музыка',
-    'мультфильм',
-    'мюзикл',
-    'приключения',
-    'семейный',
-    'спорт',
-    'триллер',
-    'ужасы',
-    'фантастика',
-    'фэнтези',
-  ]
-  const [login, setLogin] = useState('')
-  const [pass, setPass] = useState('')
-  const [loginSign, setLoginSign] = useState('')
-  const [emailSign, setEmailSign] = useState('')
-  const [passSign, setPassSign] = useState('')
-  const [anchorEl, setAnchorEl] = useState(null)
+  const classes = useStyles()
+
+  const dispatch = useDispatch()
+
+  const { search } = useContentContext()
+
+  const [loginAuth, setLoginAuth] = useInput()
+  const [pass, setPass] = useInput()
+  const [username, setUsername] = useInput()
+  const [email, setEmail] = useInput()
+  const [password, setPassword] = useInput()
+  const [anchorEl, setAnchorEl] = useInput(null)
   const open = Boolean(anchorEl)
   const [openAuth, setOpenAuth] = useState(false)
   const [openSign, setOpenSign] = useState(false)
-  const [value, setValue] = useState('')
-
-  // const filteredMovies = films.filter((movie) => {
-  //   return movie.title
-  //     .toLowerCase()
-  //     .includes(StyledInputBase.value.toLowerCase())
-  //   console.log(StyledInputBase.value)
-  // })
-
-  const Search = styled('div')(({ theme }) => ({
-    position: 'relative',
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: alpha(theme.palette.common.white, 0.15),
-    '&:hover': {
-      backgroundColor: alpha(theme.palette.common.white, 0.25),
-    },
-    marginRight: theme.spacing(2),
-    marginLeft: 0,
-    width: '100%',
-    [theme.breakpoints.up('sm')]: {
-      marginLeft: theme.spacing(3),
-      width: 'auto',
-    },
-  }))
-
-  const SearchIconWrapper = styled('div')(({ theme }) => ({
-    padding: theme.spacing(0, 2),
-    height: '100%',
-    position: 'absolute',
-    pointerEvents: 'none',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  }))
+  const [searchValue, setSearchValue] = useState('')
 
   const {
     register,
     formState: { errors },
-  } = useForm()
+    handleSubmit,
+  } = useForm({
+    mode: 'onBlur',
+  })
+
+  const onSubmit = (data) => {
+    console.log(JSON.stringify(data))
+  }
+
+  useEffect(() => {
+    search(searchValue)
+  }, [searchValue, search])
 
   const handleClickMenu = (event) => {
     setAnchorEl(event.currentTarget)
@@ -129,18 +83,6 @@ function Header() {
     setOpenSign(false)
   }
 
-  const onSubmit = async (loginSign, emailSign, passSign) => {
-    const res = await fetch('http://localhost:3001/user', {
-      method: 'POST',
-      body: { loginSign, emailSign, passSign },
-    })
-    if (!res.ok) {
-      alert(res.status)
-    }
-    alert(res.json())
-    return await res.json()
-  }
-
   return (
     <AppBar position="static">
       <Container maxWidth="xl">
@@ -153,11 +95,13 @@ function Header() {
           >
             LOGO
           </Typography>
-
           <Box sx={{ flexGrow: 1, display: { md: 'flex' } }}>
             <Button sx={{ my: 1, color: 'white', display: 'box' }}>
-              Главная
+              <Link className={classes.linkHeader} to="/films">
+                Главная
+              </Link>
             </Button>
+
             <Button
               aria-label="more"
               id="long-button"
@@ -201,8 +145,8 @@ function Header() {
               <SearchIcon />
             </SearchIconWrapper>
             <StyledInputBase
-              value={value}
-              onChange={(event) => setValue(event.target.value)}
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
               placeholder="Search…"
               inputProps={{ 'aria-label': 'search' }}
             />
@@ -221,29 +165,49 @@ function Header() {
             onClose={handleClickCloseAuth}
             aria-labelledby="form-dialog-title"
           >
-            <form>
+            <form onSubmit={handleSubmit(onSubmit)}>
               <DialogTitle id="form-dialog-title">Authorization</DialogTitle>
               <DialogContent>
                 <TextField
+                  {...register('loginAuth', {
+                    required: 'Should be filled',
+                    minLength: {
+                      value: 4,
+                      message: 'At least 4 symbols',
+                    },
+                  })}
+                  error={errors?.loginAuth ? true : false}
+                  helperText={
+                    errors?.loginAuth ? errors?.loginAuth.message : null
+                  }
                   color="primary"
                   margin="dense"
                   id="name"
                   label="Log In"
                   type="login"
-                  value={login}
-                  onChange={(event) => setLogin(event.target.value)}
+                  value={loginAuth}
+                  onChange={setLoginAuth}
                   fullWidth
                 />
 
                 <TextField
+                  {...register('passAuth', {
+                    required: 'Should be filled',
+                    minLength: {
+                      value: 6,
+                      message: 'At least 6 symbols',
+                    },
+                  })}
+                  error={errors?.passAuth ? true : false}
+                  helperText={
+                    errors?.passAuth ? errors?.passAuth.message : null
+                  }
                   margin="dense"
                   id="pass"
                   label="Password"
                   type="password"
                   value={pass}
-                  onChange={(event) => {
-                    setPass(event.target.value)
-                  }}
+                  onChange={setPass}
                   fullWidth
                 />
               </DialogContent>
@@ -252,7 +216,10 @@ function Header() {
                 <Button onClick={handleClickCloseAuth} color="primary">
                   Cancel
                 </Button>
-                <Button onSubmit={onSubmit} type="submit" color="primary">
+                <Button
+                  onClick={() => dispatch(login(loginAuth, pass))}
+                  color="primary"
+                >
                   Log In
                 </Button>
               </DialogActions>
@@ -271,36 +238,67 @@ function Header() {
             onClose={handleClickCloseSign}
             aria-labelledby="form-dialog-title"
           >
-            <form onSubmit={() => onSubmit(loginSign, emailSign, passSign)}>
+            <form
+              onSubmit={() =>
+                handleSubmit(onSubmit(registration(username, email, password)))
+              }
+            >
               <DialogTitle id="form-dialog-title">Registration</DialogTitle>
               <DialogContent>
                 <TextField
+                  {...register('loginReg', {
+                    required: 'Should be filled',
+                    minLength: {
+                      value: 4,
+                      message: 'At least 4 symbols',
+                    },
+                  })}
+                  error={errors?.loginReg ? true : false}
+                  helperText={
+                    errors?.loginReg ? errors?.loginReg.message : null
+                  }
                   margin="dense"
                   id="SignUp"
                   label="Username"
                   type="text"
-                  value={loginSign}
-                  onChange={(event) => setLoginSign(event.target.value)}
+                  value={username}
+                  onChange={setUsername}
                   fullWidth
                 />
 
                 <TextField
+                  {...register('emailReg', {
+                    required: 'Should be filled',
+                  })}
+                  error={errors?.emailReg ? true : false}
+                  helperText={
+                    errors?.emailReg ? errors?.emailReg.message : null
+                  }
                   margin="dense"
                   id="email"
                   label="email"
                   type="email"
-                  value={emailSign}
-                  onChange={(event) => setEmailSign(event.target.value)}
+                  value={email}
+                  onChange={setEmail}
                   fullWidth
                 />
 
                 <TextField
+                  {...register('passReg', {
+                    required: 'Should be filled',
+                    minLength: {
+                      value: 6,
+                      message: 'At least 6 symbols',
+                    },
+                  })}
+                  error={errors?.passReg ? true : false}
+                  helperText={errors?.passReg ? errors?.passReg.message : null}
                   margin="dense"
                   id="pass"
                   label="Password"
                   type="password"
-                  value={passSign}
-                  onChange={(event) => setPassSign(event.target.value)}
+                  value={password}
+                  onChange={setPassword}
                   fullWidth
                 />
               </DialogContent>
