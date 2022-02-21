@@ -4,7 +4,7 @@ const useInput = () => {
   const [value, setValue] = useState('')
 
   const handleChange = useCallback((e) => {
-    const { value } = e.target ?? '' //почитать
+    const { value } = e.target ?? ''
     setValue(value)
   }, [])
 

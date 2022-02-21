@@ -17,6 +17,12 @@ const Users = new mongoose.Schema({
     minlength: 6,
     required: true,
   },
+  comments: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Comment',
+    },
+  ],
   roles: [
     {
       type: String,
@@ -25,5 +31,5 @@ const Users = new mongoose.Schema({
   ],
 });
 
-const UsersModel = mongoose.model('Users', Users);
+const UsersModel = mongoose.model('User', Users);
 module.exports = UsersModel;

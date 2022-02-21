@@ -16,12 +16,18 @@ import { useStyles } from './styles'
 function Content() {
   const classes = useStyles()
 
-  const { getMovies, searchedValue } = useContentContext()
+  const { getMovies, searchedValue, searchValueByGenres } = useContentContext()
 
   const films = useSelector((state) => state.movies)
   const searchedMovies = useSelector((state) => state.searchedMovies)
+  const searchedMoviesByGenres = useSelector(
+    (state) => state.saveSearchedMoviesByGenres
+  )
 
-  const moviesToShow = searchedValue ? searchedMovies : films
+  const prev = searchedValue ? searchedMovies : films
+  const moviesToShow = searchValueByGenres.length
+    ? searchedMoviesByGenres
+    : prev
 
   useEffect(() => {
     getMovies()

@@ -1,9 +1,9 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Outlet } from 'react-router-dom'
-import Header from './Header/Header'
 import PageUser from './Header/PageUser'
 import { auth } from '../store/actions'
+import Header from './Header/Header'
 
 const Layout = () => {
   const dispatch = useDispatch()

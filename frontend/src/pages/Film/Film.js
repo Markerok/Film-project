@@ -1,5 +1,6 @@
 import { React, useEffect, useState } from 'react'
 import {
+  Button,
   Card,
   CardActionArea,
   CardContent,
@@ -8,7 +9,8 @@ import {
   Typography,
 } from '@mui/material'
 import { useStyles } from './styles'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
+import axios from 'axios'
 
 const Film = () => {
   const { id } = useParams()
@@ -16,16 +18,15 @@ const Film = () => {
   const [film, setFilm] = useState(null)
 
   useEffect(() => {
-    fetch(`https://yts.mx/api/v2/movie_details.json?movie_id=${id}`)
-      .then((response) => response.json())
-      .then((json) => setFilm(json.data.movie))
+    axios
+      .get(`https://yts.mx/api/v2/movie_details.json?movie_id=${id}`)
+      .then((response) => setFilm(response.data.data.movie))
   }, [id])
 
   return (
     <Container className={classes.container}>
       {film && (
         <Card
-          className={classes.card}
           raised
           key={film.id}
           sx={{ maxWidth: 330, display: 'inline-flex' }}
@@ -42,13 +43,25 @@ const Film = () => {
                 {film.title_long} ({film.rating})
               </Typography>
               <Typography sx={{ fontWeight: 'bold' }}>
-                Category: {film.genres}
+                Category:
+                {Array.isArray(film.genres) ? film.genres.join() : 'none'}
               </Typography>
-              <Typography>{film.description_full}</Typography>
+              <Typography sx={{ fontSize: '14px' }}>
+                {film.description_full}
+              </Typography>
             </CardContent>
           </CardActionArea>
         </Card>
       )}
+      <Link className={classes.linkContent} to={`/films/${id}/reviews`}>
+        <Button
+          sx={{ display: 'block', margin: '0 auto' }}
+          variant="contained"
+          size="medium"
+        >
+          Reviews
+        </Button>
+      </Link>
     </Container>
   )
 }

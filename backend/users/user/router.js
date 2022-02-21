@@ -12,7 +12,7 @@ router.post(
   create,
 );
 router.get('/', readAll);
-router.get('/', readById);
+router.get('/user_by_id', readById);
 router.put('/', updateByID);
 router.delete('/', deleteAll);
 router.delete('/', deleteById);

@@ -40,7 +40,7 @@ const readAll = async (req, res) => {
 };
 
 const readById = async (req, res) => {
-  const user = await UsersModel.findById({ _id: '' });
+  const user = await UsersModel.findById({ _id: '61ee808feb0ffb002360b560' }).populate('comments');
   res.status(200).json(user);
 };
 const updateByID = async (req, res) => {

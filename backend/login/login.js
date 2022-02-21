@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const UsersModel = require('../users/models/users');
+const FilmModel = require('../FIlm/film');
 const { secret } = require('../config');
 
 const login = async (req, res) => {
@@ -22,6 +23,11 @@ const login = async (req, res) => {
         id: user.id,
         username: user.username,
       },
+      comments: [
+        {
+          username: user.username,
+        },
+      ],
     });
   } catch (e) {
     console.log(e);

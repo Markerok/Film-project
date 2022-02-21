@@ -1,4 +1,8 @@
-import { SAVE_MOVIES, SAVE_SEARCHED_MOVIES } from './types'
+import {
+  SAVE_MOVIES,
+  SAVE_SEARCHED_MOVIES,
+  SAVE_SEARCHED_MOVIES_BY_GENRES,
+} from './types'
 import axios from 'axios'
 import { setUser } from '../store/userReducer'
 
@@ -12,6 +16,13 @@ export function saveMovies(newItems) {
 export function saveSearchedMovies(newItems) {
   return {
     type: SAVE_SEARCHED_MOVIES,
+    newItems,
+  }
+}
+
+export function saveSearchedMoviesByGenres(newItems) {
+  return {
+    type: SAVE_SEARCHED_MOVIES_BY_GENRES,
     newItems,
   }
 }
@@ -53,7 +64,7 @@ export const auth = () => {
       dispatch(setUser(res.data.user))
       localStorage.setItem('token', res.data.token)
     } catch (error) {
-      console.log(error.res.data.message)
+      console.log(error)
       localStorage.removeItem('token')
     }
   }

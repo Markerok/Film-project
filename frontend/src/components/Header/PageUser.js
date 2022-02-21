@@ -15,7 +15,6 @@ import { logout } from '../../store/userReducer'
 import { StyledInputBase, Search, SearchIconWrapper } from './styles'
 import { useStyles } from '../../pages/Content/styles'
 import { Link } from 'react-router-dom'
-import useInput from '../../hooks/useInput'
 import { options } from './constants'
 import useContentContext from '../ContentContext'
 
@@ -27,7 +26,7 @@ const PageUser = () => {
   const { search } = useContentContext()
 
   const classes = useStyles()
-  const [anchorEl, setAnchorEl] = useInput(null)
+  const [anchorEl, setAnchorEl] = useState(null)
   const open = Boolean(anchorEl)
 
   const handleClickMenu = (event) => {

@@ -1,9 +1,9 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const userRouter = require('./users/user/router');
-const filmRouter = require('./films/film/router');
 const roleRouter = require('./role/role/router');
 const loginRouter = require('./login/router');
+const commentRouter = require('./Comment/comment/router');
 const authRouter = require('./login/authRouter');
 const corsMiddleware = require('./middleware/cors.middleware');
 
@@ -13,8 +13,8 @@ const app = express();
 app.use(express.json());
 app.use(corsMiddleware);
 
+app.use('/comment', commentRouter);
 app.use('/user', userRouter);
-app.use('/film', filmRouter);
 app.use('/role', roleRouter);
 app.use('/login', loginRouter);
 app.use('/auth', authRouter);

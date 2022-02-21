@@ -12,7 +12,10 @@ import {
   Toolbar,
   Typography,
   Menu,
-  MenuItem,
+  ListItem,
+  List,
+  ListItemText,
+  Checkbox,
 } from '@mui/material'
 import { useDispatch } from 'react-redux'
 import { Box } from '@mui/system'
@@ -31,18 +34,19 @@ function Header() {
 
   const dispatch = useDispatch()
 
-  const { search } = useContentContext()
+  const { search, searchGenre } = useContentContext()
 
   const [loginAuth, setLoginAuth] = useInput()
   const [pass, setPass] = useInput()
   const [username, setUsername] = useInput()
   const [email, setEmail] = useInput()
   const [password, setPassword] = useInput()
-  const [anchorEl, setAnchorEl] = useInput(null)
+  const [anchorEl, setAnchorEl] = useState(null)
   const open = Boolean(anchorEl)
   const [openAuth, setOpenAuth] = useState(false)
   const [openSign, setOpenSign] = useState(false)
   const [searchValue, setSearchValue] = useState('')
+  const [searchValueByGenres, setSearchValueByGenres] = useState([])
 
   const {
     register,
@@ -54,6 +58,17 @@ function Header() {
 
   const onSubmit = (data) => {
     console.log(JSON.stringify(data))
+  }
+
+  const getGenre = (e) => {
+    let filterByGenre
+    if (e.target.checked) {
+      filterByGenre = [...searchValueByGenres, e.target.value]
+    } else {
+      filterByGenre = searchValueByGenres.filter((el) => el !== e.target.value)
+    }
+    setSearchValueByGenres(filterByGenre)
+    searchGenre(filterByGenre)
   }
 
   useEffect(() => {
@@ -128,15 +143,18 @@ function Header() {
                 },
               }}
             >
-              {options.map((option) => (
-                <MenuItem
-                  key={option}
-                  selected={option === 'Pyxis'}
-                  onClick={handleCloseMenu}
-                >
-                  {option}
-                </MenuItem>
-              ))}
+              <List>
+                {options.map((option) => (
+                  <ListItem key={option}>
+                    <Checkbox
+                      checked={searchValueByGenres.includes(option)}
+                      onChange={getGenre}
+                      value={option}
+                    />
+                    <ListItemText primary={option} />
+                  </ListItem>
+                ))}
+              </List>
             </Menu>
           </Box>
 
@@ -318,4 +336,5 @@ function Header() {
     </AppBar>
   )
 }
+
 export default Header
